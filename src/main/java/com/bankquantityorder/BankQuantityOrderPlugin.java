@@ -7,7 +7,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ScriptPostFired;
@@ -29,7 +28,6 @@ import net.runelite.client.plugins.PluginDescriptor;
  * right-click options, hover effects and selected-state highlight are untouched
  * and travel with them. The selected quantity (a varbit) is never written.
  */
-@Slf4j
 @PluginDescriptor(
 	name = "Customizable Bank UI",
 	description = "Reorder, hide, resize and divide the buttons in the bank's bottom row",
@@ -129,8 +127,17 @@ public class BankQuantityOrderPlugin extends Plugin
 		}
 
 		RowButton moved = RowButton.forButtonId(dragged.getId());
+		if (moved == null)
+		{
+			return;
+		}
+
+		// The game would send a drag packet for this release; the buttons are only draggable
+		// because of this plugin, so the reorder must stay client-side (as core's prayer reorder does)
+		client.setDraggedOnWidget(null);
+
 		RowButton target = RowButton.forButtonId(draggedOn.getId());
-		if (moved == null || target == null || moved == target)
+		if (target == null || moved == target)
 		{
 			return;
 		}

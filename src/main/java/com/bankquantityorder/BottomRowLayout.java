@@ -177,6 +177,19 @@ class BottomRowLayout
 			extra = 0;
 		}
 
+		// More dividers than the game's three (e.g. "Between buttons") can need more room than the
+		// row has; narrow the buttons evenly so the last one never ends up past the row's edge
+		if (extra < 0 && n > 0)
+		{
+			int each = -extra / n;
+			int remainder = -extra % n;
+			for (Button b : placed)
+			{
+				b.newW -= each + (remainder-- > 0 ? 1 : 0);
+			}
+			extra = 0;
+		}
+
 		// "Leave gaps" keeps the row full width: whatever space is left over (from dividers removed or
 		// narrower buttons) is shared out evenly between the buttons
 		int[] extraGap = new int[Math.max(n - 1, 0)];
